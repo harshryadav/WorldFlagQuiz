@@ -18,7 +18,8 @@ app.set("views", path.resolve(__dirname, "templates"));
 app.use(express.static(__dirname + '/templates'));
 app.set("view engine", "ejs");
 let hostName = process.env_API_URL || "http://localhost";
-let host = `${hostName}:${portNumber}`;
+// let host = `${hostName}:${portNumber}`;
+let host ="";
 if (typeof localStorage === "undefined" || localStorage === null) {
     var LocalStorage = require('node-localstorage').LocalStorage;
     localStorage = new LocalStorage('./scratch');
@@ -373,4 +374,5 @@ async function fecthApi(url) {
                     });
                         
 }
-app.listen(portNumber);
+// app.listen(portNumber);
+client.connect().then(() => app.listen(portNumber));
