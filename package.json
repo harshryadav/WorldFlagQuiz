@@ -4,8 +4,6 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --recursive test",
-    "bump-version": "npm version patch"
   },
   "author": "",
   "license": "ISC",
