@@ -169,8 +169,8 @@ app.post("/result", (req, res) => {
                         }
                         guesses = 1;
                         score = 0;
-                        bestScore = result.score;
-                        res.render("homepage",{best :result.score});
+                        bestScore = result.score === 0 ? bestScore : result.score;
+                        res.render("homepage",{best :bestScore});
                     }else{
                         guesses = 1;
                         score = 0;    
@@ -303,8 +303,8 @@ app.post("/register", (req, res) => {
             await client.connect();
            const result =  await insertApplication(client, databaseAndCollection, variables);
            if(result !== null) {
-                localStorage.setItem("email", password.email);
-                localStorage.setItem("password",password.password);
+                localStorage.setItem("email", variables.email);
+                localStorage.setItem("password",variables.password);
                 bestScore = result.score;
                 res.render("homepage",{best :bestScore});
            }else{
