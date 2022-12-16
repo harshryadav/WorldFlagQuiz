@@ -12,7 +12,8 @@ const username = process.env.MONGO_DB_USERNAME;
 const password = process.env.MONGO_DB_PASSWORD;
 const uri =`mongodb+srv://${username}:${password}@cluster0.gtzg2gd.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });     
-const databaseAndCollection = {db: process.env.MONGO_DB_NAME, collection:process.env.MONGO_COLLECTION}
+const databaseAndCollection = {db: process.env.MONGO_DB_NAME, collection:process.env.MONGO_COLLECTION, collectionApi: process.env.MONGO_COLLECTION_COUNTRY};
+const databaseAndCollectionAPI = {db: process.env.MONGO_DB_NAME,  collection: process.env.MONGO_COLLECTION_COUNTRY};
 app.set("views", path.resolve(__dirname, "templates"));
 app.use(express.static(__dirname + '/templates'));
 app.set("view engine", "ejs");
@@ -21,12 +22,22 @@ if (typeof localStorage === "undefined" || localStorage === null) {
     var LocalStorage = require('node-localstorage').LocalStorage;
     localStorage = new LocalStorage('./scratch');
   }
-let score = 0, playScore = 7, guesses=1;
+let score = 0, playScore = 7, guesses=1, bestScore = 0;
 app.get("/", (req, res) => {
-    res.render("index",{host: host+"/signIn", error: false});
+    if(localStorage.getItem("email") === null && localStorage.getItem("password") === null){
+        res.render("index", {host: host+"/signIn", error: false});
+    }else{
+        
+        res.render("homepage",{best :bestScore});
+    }
 });
 app.get("/register", (req, res) => {
     res.render("register", {host: host+"/register"});
+});
+app.get("/logout", (req, res) => {
+    localStorage.removeItem("email");
+    localStorage.removeItem("password");
+    res.render("index", {host: host+"/signIn", error: false});
 });
 
 app.post("/signIn", (req, res) => {
@@ -42,7 +53,8 @@ app.post("/signIn", (req, res) => {
             if(result!== null){
                 localStorage.setItem("email", result.email);
                 localStorage.setItem("password",result.password);
-                res.render("homepage");     
+                bestScore = result.score;
+                res.render("homepage", {best :result.score});     
             }else{
                 variables.host =host+"/signIn";
                 variables.error=  true;
@@ -63,13 +75,14 @@ app.get('/LeaderBoard', (req, res) => {
     async function main() {
         try {
             await client.connect();
-            const result = await lookUpUser(client, databaseAndCollection, {email:"fchoukou@montgomerycollege.edu"});
+            const result = await getAllUsers(client, databaseAndCollection);
+            
             if(result?.length !== 0){
-                let table ="<table border ='1'> <tr><th>Name</th><th>Score</th></tr>";
-                table += `<tr><td>${result.firstName}- ${result.lastName} </td><td>${result.score}</td></tr>`;
-                // result.forEach(element => {
-                //     table += `<tr><td>${element.firstName}- ${element.lastName} </td><td>${element.score}</td></tr>`
-                // });
+                let table ="<table  class='table'> <tr><th>Name</th><th>Score</th></tr>";
+                // table += `<tr><td>${result.firstName}- ${result.lastName} </td><td>${result.score}</td></tr>`;
+                result.forEach(element => {
+                    table += `<tr><td>${element.firstName}- ${element.lastName} </td><td>${element.score}</td></tr>`
+                });
                 table+= "</table>";
                 variables.resultTable = table;
                 
@@ -96,7 +109,7 @@ app.get("/quiz", (req, res) => {
             async function main() {
                 try {
                     await client.connect();
-                    const result = await randomCountry(client, databaseAndCollection, variables);
+                    const result = await randomCountry(client, databaseAndCollectionAPI, variables);
                     if(result?.length !== 0){
                         variables.src = result[0].flags;
                         variables.answer = result[0].alpha2Code;
@@ -122,7 +135,7 @@ app.get("/quiz", (req, res) => {
     
 });
 app.post("/result", (req, res) => {
-    console.log(guesses);
+    
     if(guesses <= playScore){
         guesses++;
         if(req.body.selected.includes(req.body.answer)){
@@ -139,7 +152,7 @@ app.post("/result", (req, res) => {
                     await client.connect();
                     variables.email = localStorage.getItem('email');
                     const result = await lookUpUser(client, databaseAndCollection, variables);
-                    console.log(result._id.valueOf());
+                    
                     if(result!== null){
                         if(result.score < score){
                             await client.db(databaseAndCollection.db)
@@ -151,7 +164,8 @@ app.post("/result", (req, res) => {
                         }
                         guesses = 1;
                         score = 0;
-                        res.render("homepage");
+                        bestScore = result.score;
+                        res.render("homepage",{best :result.score});
                     }else{
                         guesses = 1;
                         score = 0;    
@@ -178,7 +192,8 @@ app.get("/viewCountries", (req, res) => {
         async function main() {
             try {
             // USED API HERE 
-            let result = await fecthApi();
+            let url = "https://restcountries.com/v2/all"
+            let result = await fecthApi(url);
             let index = Math.floor(Math.random() * result.length - 1); 
             variables.src = result[index].flags?.png;
             variables.answer = result[index].name;
@@ -190,42 +205,84 @@ app.get("/viewCountries", (req, res) => {
         main().catch(console.error);
 
 });
-// app.get("/api", (req, res) => {
-//     let url = "https://restcountries.com/v2/all";
-//     let struct = {
-//         countryName:'',
-//         flags:'',
-//         alpha2Code:'',
-//     }
-//     let AllCountries =[];
-//     async function main() {
-//         try {
-//             await client.connect();
-//             const result =  await fecthApi();
-//             result.forEach(e => {
-//                 let struct = {
-//                     countryName:e.alpha2Code,
-//                     flags:e.flags?.png,
-//                     alpha2Code:e.name,
-//                 };
-//                AllCountries.push(struct);
-//             });
-//             await insertCountries(client, databaseAndCollection, AllCountries);
-//             res.render("play");
-//         } catch (e) {
-//             console.error(e);
-//         } finally {
-//             await client.close();
-//         }
-//     }
-//     main().catch(console.error);
-//     res.render("play");
-// });
+app.get("/search", (req, res) => {
+    let variables = {
+        src: "",
+        answer: "",
+        message: "",
+        not_found: false,
+        host: host+"/search"
+    };
+    res.render("searchCountry", variables);
+});
+app.get("/searchQuery", (req, res) => {
+    let variables = {
+        src: "",
+        answer: "",
+        message: "",
+        not_found: false,
+        host: host+"/search"
+    };
+    let url = `https://restcountries.com/v2/name/${req?.query?.countryName.toLowerCase()}`
+    async function main() {
+        try {
+        let result = await fecthApi(url);
+        if(result !== "Not Found"){
+            variables.src = result[0]?.flags?.png;
+            variables.answer = result[0]?.name;
+            variables.not_found = true;
+        }else{
+            variables.message = "The country Name you searched is not available or maybe the typo is invalid";
+        }
+        res.render("searchCountry", variables);
+        
+        } catch (e) {
+            console.error(e);
+        } 
+    }
+    main().catch(console.error);
+
+});
+
+
+app.get("/api", (req, res) => {
+    let url = "https://restcountries.com/v2/all";
+    let struct = {
+        countryName:'',
+        flags:'',
+        alpha2Code:'',
+    }
+    let AllCountries =[];
+    async function main() {
+        try {
+            await client.connect();
+            const result =  await fecthApi();
+            result.forEach(e => {
+                let struct = {
+                    countryName:e.alpha2Code,
+                    flags:e.flags?.png,
+                    alpha2Code:e.name,
+                };
+               AllCountries.push(struct);
+            });
+            await insertCountries(client, databaseAndCollectionAPI, AllCountries);
+            bestScore = result.score;
+            res.render("homepage" ,{best :bestScore});
+        } catch (e) {
+            console.error(e);
+        } finally {
+            await client.close();
+        }
+    }
+    main().catch(console.error);
+    
+});
 app.get("/homepage", (req, res) => {
     if(localStorage.getItem("email") === null && localStorage.getItem("password") === null){
         res.render("index", {host: host+"/signIn", error: false});
     }else{
-        res.render("homepage");
+        
+        res.render("homepage",{best :bestScore});
     }
 });
 app.post("/register", (req, res) => {
@@ -240,10 +297,11 @@ app.post("/register", (req, res) => {
         try {
             await client.connect();
            const result =  await insertApplication(client, databaseAndCollection, variables);
-           if(result != null) {
+           if(result !== null) {
                 localStorage.setItem("email", password.email);
                 localStorage.setItem("password",password.password);
-                res.render("homepage");
+                bestScore = result.score;
+                res.render("homepage",{best :bestScore});
            }else{
             variables.host = host+"/register";
                 res.render("register", variables);
@@ -256,7 +314,6 @@ app.post("/register", (req, res) => {
         }
     }
     main().catch(console.error);
-    res.render("homepage");
 });
 console.log(`Web server started and running at http://localhost:${portNumber}`);
 
@@ -293,13 +350,26 @@ async function lookUpUser(client, databaseAndCollection, filter) {
                         .collection(databaseAndCollection.collection)
                         .findOne(filter);
 }
+
+async function getAllUsers(client, databaseAndCollection) {
+    
+    const cursor = client.db(databaseAndCollection.db)
+                        .collection(databaseAndCollection.collection).find({score: { $gte: 0 } }).sort({score:-1});
+    return await cursor.toArray();
+}
 async function updateUser(client, databaseAndCollection, filter) {
     return await client.db(databaseAndCollection.db)
                         .collection(databaseAndCollection.collection)
                         .updateOne(filter);
 }
 async function fecthApi(url) {
-    let response = await fetch('https://restcountries.com/v2/all');
-    return await response.json();
+    return  await fetch(url)
+                    .then(response=> {
+                        if(response.status === 404){
+                            return "Not Found";
+                        }
+                        return  response.json();
+                    });
+                        
 }
 app.listen(portNumber);

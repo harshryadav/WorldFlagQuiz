@@ -16,29 +16,25 @@
    
 <main class="form-signin w-100 m-auto">
   <form action=<%= host %> method="post">
-    <img class="mb-4" src="" alt="" width="72" height="57">
+    <img class="mb-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnQlKLCMa1pwH4Vme9KnnABJ8isBexXc7XLEdpPZOY4Q&s" alt="" width="72" height="57">
     <h1 class="h3 mb-3 fw-normal">Please Register </h1>
     <div class="form-floating">
-        <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First Name">
+        <input type="text" class="form-control" name="firstName" required id="firstName" placeholder="First Name">
         <label for="firstName">First Name </label>
     </div>
     <div class="form-floating">
-    <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last Name">
+    <input type="text" class="form-control" name="lastName" required id="lastName" placeholder="Last Name">
     <label for="lastName">Last Name </label>
     </div>
     <div class="form-floating">
-      <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com">
+      <input type="email" class="form-control" name="email" required id="email" placeholder="name@example.com">
       <label for="email">Email address</label>
     </div>
     <div class="form-floating">
-      <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password">
+      <input type="password" class="form-control" required name="password" id="floatingPassword" placeholder="Password">
       <label for="floatingPassword">Password</label>
     </div>
-  
-    <div class="form-floating">
-        <input type="password" class="form-control" name="Confirmpassword" id="confirmPassword" placeholder="Confirmation Password">
-        <label for="confirmPassword">Confirmation Password</label>
-    </div>
+
     <button class="w-100 btn btn-lg btn-primary" type="submit">Register</button>
   </form>
 </main>

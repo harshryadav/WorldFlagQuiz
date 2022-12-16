@@ -23,15 +23,15 @@
     <% } %>
    
   <form method="post" action=<%= host %> >
-    <img class="mb-4" src=<%= error %> alt="" width="72" height="57">
+    <img class="mb-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnQlKLCMa1pwH4Vme9KnnABJ8isBexXc7XLEdpPZOY4Q&s"alt="" width="72" height="57">
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
     <div class="form-floating" >
-      <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com" value=<%= (locals.email) ? email : '' %>>
+      <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com" required value=<%= (locals.email) ? email : '' %>>
       <label for="floatingInput">Email address</label>
     </div>
     <div class="form-floating">
-      <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" value=<%= (locals.password) ? password : '' %>>
+      <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required  value=<%= (locals.password) ? password : '' %>>
       <label for="floatingPassword">Password</label>
     </div>
     <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
