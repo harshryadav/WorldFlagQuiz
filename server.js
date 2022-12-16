@@ -17,7 +17,8 @@ const databaseAndCollectionAPI = {db: process.env.MONGO_DB_NAME,  collection: pr
 app.set("views", path.resolve(__dirname, "templates"));
 app.use(express.static(__dirname + '/templates'));
 app.set("view engine", "ejs");
-let host = `http://localhost:${portNumber}`;
+let hostName = process.env_API_URL || "http://localhost";
+let host = `${hostName}:${portNumber}`;
 if (typeof localStorage === "undefined" || localStorage === null) {
     var LocalStorage = require('node-localstorage').LocalStorage;
     localStorage = new LocalStorage('./scratch');
