@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 require("dotenv").config({path:path.resolve(__dirname, './.env')});
 process.stdin.setEncoding("utf8");
 app.use(bodyParser.urlencoded({extended:false}));
-let portNumber =process.env.PORT || 8000;
+let portNumber =process.env.PORT || 3000;
 const username = process.env.MONGO_DB_USERNAME;
 const password = process.env.MONGO_DB_PASSWORD;
 const uri =`mongodb+srv://${username}:${password}@cluster0.gtzg2gd.mongodb.net/?retryWrites=true&w=majority`;
@@ -317,7 +317,7 @@ app.post("/register", (req, res) => {
     }
     main().catch(console.error);
 });
-console.log(`Web server started and running at http://localhost:${portNumber}`);
+// console.log(`Web server started and running at http://localhost:${portNumber}`);
 
 async function insertApplication(client,databaseAndCollection, newApp){
     return await client.db(databaseAndCollection.db)
