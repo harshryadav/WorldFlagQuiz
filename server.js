@@ -1,4 +1,5 @@
 const http = require('http');
+const fetch = require('node-fetch');
 const path = require("path");
 const express = require("express"); 
 const app = express();
@@ -123,6 +124,7 @@ app.get("/quiz", (req, res) => {
                     
                         });
                     }
+                    bestScore = score;
                     variables.score = score;
                     variables.playScore = playScore;
                 res.render("play", variables);
@@ -142,6 +144,7 @@ app.post("/result", (req, res) => {
         guesses++;
         if(req.body.selected.includes(req.body.answer)){
             score++;
+            bestScore = score;
         }
         res.redirect('/quiz');
     }else{
@@ -317,7 +320,7 @@ app.post("/register", (req, res) => {
     }
     main().catch(console.error);
 });
-// console.log(`Web server started and running at http://localhost:${portNumber}`);
+console.log(`Web server started and running at http://localhost:${portNumber}`);
 
 async function insertApplication(client,databaseAndCollection, newApp){
     return await client.db(databaseAndCollection.db)
