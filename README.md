@@ -1,13 +1,11 @@
-# Final-Project-335: Creating a World Map Quiz
-
-# Team Members:
- - Frank Choukouali(fchoukou)
- - Eyob Ashagire(eashagir)
- - Harsh Yadav(hyadav)
- - Neel Joshi(njoshi24)
+World Map Quiz
 
 # App Description:
-For our web app final project we created a flag quiz game. Users are able to sign in and guess the country name that matches the flag displayed via multiple choice. There is a score for each game and  we update the most highest score to the data. We display all the scores of all users on the   leaderboard page. Morever, User can search for a country by name and just randomly view country. Some of the Technologies we used were, get bootstrap for the UI, Node, Express, and Mongo for the backend, and Rest Countries API for flag png and country name. 
+The following web application is a world flag quiz. Users are able to sign in and attempt to match the displayed flag with the correct country name through
+multiple choice options. Each game keeps track of the player's score and the highest score is recorded and displayed on a leaderboard page. Users can also
+search for a country by name and view a random country. Some of the technologies used included Bootstrap for the UI, Node, Express, Mongo for the backend, and
+the Rest Countries API for flag images and country names.
+
 
 # YouTube Full Demo:
 https://www.youtube.com/watch?v=Ng-z8ojaKj8
@@ -35,9 +33,9 @@ https://www.youtube.com/watch?v=Ng-z8ojaKj8
 ## Setup
 
 Clone the repo
-git clone https://github.com/Choukouali2014/Final-Project-335
+git clone https://github.com/harshryadav/WorldFlagQuiz
 
-Run `cd Final-Project-335` to go inside the directory
+Run `cd WorldFlagQuiz` to go inside the directory
 
 Install dependencies:
   -Run `npm install
